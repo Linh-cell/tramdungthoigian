@@ -243,23 +243,7 @@
     margin-bottom:14px;
   }
   .gallery-main::before{content:""; position:absolute; inset:14px; border:1px solid rgba(242,230,206,0.3);}
-  /* khung ảnh tự co theo đúng tỉ lệ ảnh, không cắt ảnh */
-  .gallery-main.has-img{padding:0; aspect-ratio:auto; display:block; background:var(--cream-deep); border:1px solid var(--paper-line);}
-  .gallery-main.has-img::before{display:none;}
-  .gallery-main.has-img img, .detail-cover.has-img img{position:static; width:100%; height:auto; display:block;}
-  .detail-cover.has-img{aspect-ratio:auto; padding:0; display:block; background:var(--cream-deep); border:1px solid var(--paper-line);}
-  .detail-cover.has-img::before{display:none;}
-  /* xuống dòng + link bấm được trong phần mô tả */
-  p.summary, .postcard p{white-space:pre-line;}
-  p.summary a, .linkified a{color:var(--rust-deep); text-decoration:underline; word-break:break-all;}
-  .gallery-thumbs{display:flex; gap:10px; flex-wrap:wrap;}
-  .gallery-thumbs .gallery-thumb{flex:0 0 calc(25% - 8px); padding:0; overflow:hidden; cursor:pointer; position:relative;}
-  .gallery-thumb img{width:100%; height:100%; object-fit:cover;}
-  .gallery-thumb.active{outline:2px solid var(--indigo); outline-offset:1px; opacity:1;}
-  .extra-images{margin-top:16px; display:grid; gap:12px;}
-  .extra-images img{width:100%; border:1px solid var(--paper-line);}
-  .feed-post-images{display:grid; gap:12px; margin:14px 0;}
-  .feed-post-images img{width:100%; border:1px solid var(--paper-line);}
+  .gallery-thumbs{display:flex; gap:10px;}
   .gallery-thumb{
     flex:1; aspect-ratio:1/1; background:var(--cream-deep); border:1px solid var(--paper-line);
     display:flex; align-items:center; justify-content:center; font-family:var(--mono); font-size:0.68rem;
@@ -330,7 +314,7 @@
       <button data-nav="gioi-thieu">Giới thiệu</button>
       <button data-nav="rant">Rant</button>
       <button data-nav="doujinshi">Doujinshi</button>
-      <button data-nav="fiction">Fiction</button>
+      <button data-nav="fic-dich">Fic dịch</button>
       <button data-nav="ton-kho">Hàng tồn kho</button>
     </nav>
   </div>
@@ -380,7 +364,7 @@
             </button>
             <button class="signpost" data-nav="fiction">
               <div class="mark">03</div>
-              <div><h3>Fiction</h3><p>Những bộ truyện mình đã xin phép dịch lại.</p></div>
+              <div><h3>Fic dịch</h3><p>Những fic mình đã xin phép dịch lại</p></div>
             </button>
             <button class="signpost" data-nav="ton-kho">
               <div class="mark">04</div>
@@ -399,7 +383,7 @@
             <div class="postmark">🔗 Công thức tính giá</div>
             <p class="formula">Tiền hàng = Giá Nhật × Tỷ giá × 1.1 + Phí ship nội địa (nếu có) + Phí ship quốc tế</p>
             <div class="spec-list">
-              <div class="spec-item"><span class="label">Tỷ giá</span><span>178 (cập nhật 3/9/2026)</span></div>
+              <div class="spec-item"><span class="label">Tỷ giá</span><span>179 (cập nhật 16/5/2026)</span></div>
               <div class="spec-item"><span class="label">Cước phí đường bay</span><span>180k / kg (card/badge từ 5 cái trở xuống được miễn)</span></div>
             </div>
           </div>
@@ -449,9 +433,6 @@
             </div>
             <div class="feed-tags"><span class="feed-tag">#Hetalia</span><span class="feed-tag">#AlfredFJones</span></div>
           </article>
-
-
-
 
 
 
@@ -552,7 +533,6 @@
       <div class="footer-col">
         <h4>Liên hệ</h4>
         <a href="https://www.facebook.com/profile.php?id=61576390054863" target="_blank" rel="noopener">Fanpage Facebook</a>
-        <a href="mailto:thetimepause@gmail.com">Gmail</a>
       </div>
     </div>
     <div class="footer-bottom">
@@ -568,29 +548,15 @@
      hiện ra ở trang đọc). Muốn thêm chương mới: copy 1 khối {..} có sẵn,
      đổi slug/name/content là xong — web tự tạo trang đọc mới.
      - Với fic dịch: content là các đoạn <p>...</p>.
-     - Nhiều ảnh: thêm "images": ["images/a.jpg", "images/b.jpg"] vào sản phẩm / doujinshi / fic.
      - Với doujinshi: content có thể là các thẻ <img src="ten-anh.jpg">
        (nhớ để file ảnh cùng thư mục với file HTML này).
   ============================================================= */
 
-                var doujinshiData = {};
+          var doujinshiData = {};
 
   var ficData = {};
 
-  var productData = {
-    "doujinshi-dye-me-in-cherry-red": {
-      "name": "Doujinshi \"Dye Me in Cherry Red\"",
-      "cover": "<img src=\"images/1795252859694-b1fd3d24-3fae-4bf0-b919-088f66ddb9d4.jpg\" style=\"width:100%;height:100%;object-fit:cover;\">",
-      "price": "242.000đ",
-      "summary": "🎩🍔 Artist: cotoba\n\n🎩🍔 Sample: https://www.pixiv.net/artworks/151177610",
-      "specs": [
-        {
-          "label": "Kích thước",
-          "value": "A5 - 66P"
-        }
-      ]
-    }
-  };
+  var productData = {};
 
   /* ============ RENDER DANH SÁCH ============ */
   function renderDoujinshiGrid(){
@@ -600,7 +566,7 @@
       var d = doujinshiData[slug];
       var statusClass = d.status === 'done' ? 'status-done' : 'status-going';
       html += '<a class="postcard" href="#doujinshi/'+slug+'">' +
-        '<div class="cover">'+coverHTML(d)+'</div>' +
+        '<div class="cover">'+d.cover+'</div>' +
         '<div class="tag-row"><span class="tag">Fandom: '+d.fandom+'</span><span class="tag '+statusClass+'">'+d.statusLabel+'</span></div>' +
         '<h3>'+d.title+'</h3>' +
         '<p>'+d.summary+'</p>' +
@@ -633,7 +599,7 @@
     Object.keys(productData).forEach(function(slug){
       var p = productData[slug];
       html += '<a class="postcard" href="#ton-kho/'+slug+'">' +
-        '<div class="cover product-cover">'+coverHTML(p)+'</div>' +
+        '<div class="cover product-cover">'+p.cover+'</div>' +
         '<h3>'+p.name+'</h3>' +
         '<p>'+p.summary+'</p>' +
         '<span class="price-tag">'+p.price+'</span>' +
@@ -664,13 +630,11 @@
       '<div class="wrap">' +
         '<button class="back-link" style="margin-top:28px;" data-nav="doujinshi">← Về danh sách Doujinshi</button>' +
         '<div class="detail-grid">' +
-          '<div><div class="detail-cover'+(imageList(d).length ? ' has-img' : '')+'">'+(imageList(d).length ? fitImg(imageList(d)[0]) : d.cover)+'</div>' +
-            (imageList(d).length > 1 ? '<div class="extra-images">'+imageList(d).slice(1).map(function(u){ return '<img src="'+u+'" alt="">'; }).join('')+'</div>' : '') +
-          '</div>' +
+          '<div class="detail-cover">'+d.cover+'</div>' +
           '<div class="detail-info">' +
             '<div class="tag-row"><span class="tag">Fandom: '+d.fandom+'</span><span class="tag '+statusClass+'">'+d.statusLabel+'</span></div>' +
             '<h1>'+d.title+'</h1>' +
-            '<p class="summary">'+linkify(d.summary)+'</p>' +
+            '<p class="summary">'+d.summary+'</p>' +
             chapterListHTML('doujinshi', slug, d.chapters) +
           '</div>' +
         '</div>' +
@@ -691,9 +655,8 @@
         '<div class="wrap-narrow" style="padding:0; margin-top:26px;">' +
           '<div class="tag-row"><span class="tag">Tác giả gốc: '+f.author+'</span><span class="tag '+statusClass+'">'+f.statusLabel+'</span></div>' +
           '<h1 style="font-size:clamp(1.8rem,3vw,2.4rem); margin:14px 0;">'+f.title+'</h1>' +
-          (imageList(f).length ? '<div class="extra-images" style="margin-bottom:18px;">'+imageList(f).map(function(u){ return '<img src="'+u+'" alt="">'; }).join('')+'</div>' : '') +
-          '<p class="summary" style="opacity:.88; font-size:1.02rem; margin-bottom:10px;">'+linkify(f.summary)+'</p>' +
-          chapterListHTML('fiction', slug, f.chapters) +
+          '<p style="opacity:.88; font-size:1.02rem; margin-bottom:10px;">'+f.summary+'</p>' +
+          chapterListHTML('fic-dich', slug, f.chapters) +
         '</div>' +
       '</div>';
   }
@@ -737,8 +700,6 @@
       wrap.innerHTML = '<div class="wrap not-found"><h2>Không tìm thấy sản phẩm này</h2><p style="opacity:.8; margin-bottom:22px;">Có thể đường dẫn bị sai hoặc sản phẩm chưa được thêm vào.</p><button class="btn" data-nav="ton-kho">← Về Hàng tồn kho</button></div>';
       return;
     }
-    var imgs = imageList(p);
-    window.__galleryList = imgs;
     var specsHTML = '<div class="spec-list">';
     p.specs.forEach(function(s){
       specsHTML += '<div class="spec-item"><span class="label">'+s.label+'</span><span>'+s.value+'</span></div>';
@@ -750,13 +711,18 @@
         '<button class="back-link" style="margin-top:28px;" data-nav="ton-kho">← Về Hàng tồn kho</button>' +
         '<div class="product-detail-grid">' +
           '<div>' +
-            '<div class="gallery-main'+(imgs.length ? ' has-img' : '')+'" id="gallery-main">'+(imgs.length ? fitImg(imgs[0]) : p.cover)+'</div>' +
-            (imgs.length > 1 ? '<div class="gallery-thumbs">'+imgs.map(function(u,i){ return '<div class="gallery-thumb'+(i===0?' active':'')+'" onclick="setGalleryImage('+i+')"><img src="'+u+'" alt=""></div>'; }).join('')+'</div>' : '') +
+            '<div class="gallery-main">'+p.cover+'</div>' +
+            '<div class="gallery-thumbs">' +
+              '<div class="gallery-thumb">Ảnh 1</div>' +
+              '<div class="gallery-thumb">Ảnh 2</div>' +
+              '<div class="gallery-thumb">Ảnh 3</div>' +
+              '<div class="gallery-thumb">Ảnh 4</div>' +
+            '</div>' +
           '</div>' +
           '<div class="product-detail-info">' +
             '<h1>'+p.name+'</h1>' +
             '<div class="product-price-row"><span class="price-tag">'+p.price+'</span></div>' +
-            '<p class="summary">'+linkify(p.summary)+'</p>' +
+            '<p class="summary">'+p.summary+'</p>' +
             specsHTML +
             '<div class="order-note">💌 Nhắn trực tiếp cho trạm qua Facebook ở cuối trang để đặt sản phẩm này nhé.</div>' +
           '</div>' +

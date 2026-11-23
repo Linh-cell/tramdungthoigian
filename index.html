@@ -167,10 +167,15 @@
     aspect-ratio:3/4; background:linear-gradient(160deg, var(--indigo) 0%, var(--indigo-deep) 100%);
     margin:-26px -22px 18px; display:flex; align-items:center; justify-content:center;
     color:var(--cream); font-family:var(--display); font-size:1.1rem; text-align:center; padding:20px;
-    position:relative;
+    position:relative; overflow:hidden;
   }
-  .cover::before{content:""; position:absolute; inset:10px; border:1px solid rgba(242,230,206,0.3);}
-  .cover.product-cover{aspect-ratio:4/3;}
+  .cover::before{content:""; position:absolute; inset:10px; border:1px solid rgba(242,230,206,0.3); pointer-events:none;}
+  .cover.product-cover{aspect-ratio:1/1;}
+  /* Ảnh/PDF bìa luôn hiện TRỌN VẸN (contain), không bị cắt dù tỉ lệ nào */
+  .cover img, .cover canvas{
+    position:absolute !important; inset:14px; width:calc(100% - 28px) !important; height:calc(100% - 28px) !important;
+    object-fit:contain !important; max-width:none;
+  }
 
   .price-tag{font-family:var(--mono); font-size:0.85rem; color:var(--rust-deep); font-weight:700;}
   .shop-note{
@@ -192,13 +197,21 @@
   .catalog-item .status{font-family:var(--mono); font-size:0.7rem; letter-spacing:0.04em; text-align:right; white-space:nowrap;}
 
   /* ===== Trang chi tiết bộ truyện (Doujinshi / Fic) ===== */
-  .detail-grid{display:grid; grid-template-columns:260px 1fr; gap:44px; align-items:start; padding:56px 0 20px;}
+  .detail-grid{display:grid; grid-template-columns:300px 1fr; gap:44px; align-items:start; padding:56px 0 20px;}
   .detail-cover{
-    aspect-ratio:3/4; background:linear-gradient(160deg, var(--indigo) 0%, var(--indigo-deep) 100%);
-    display:flex; align-items:center; justify-content:center; color:var(--cream);
-    font-family:var(--display); font-size:1.3rem; text-align:center; padding:24px; position:relative;
+    background:linear-gradient(160deg, var(--indigo) 0%, var(--indigo-deep) 100%);
+    color:var(--cream); font-family:var(--display); font-size:1.3rem; text-align:center;
+    padding:22px; position:relative; min-height:160px; display:flex; align-items:center; justify-content:center;
   }
-  .detail-cover::before{content:""; position:absolute; inset:12px; border:1px solid rgba(242,230,206,0.3);}
+  .detail-cover::before{content:""; position:absolute; inset:10px; border:1px solid rgba(242,230,206,0.3); pointer-events:none;}
+  .detail-cover img, .detail-cover canvas{
+    position:relative; width:100% !important; height:auto !important; object-fit:contain !important; display:block;
+  }
+  .author-line{font-family:var(--mono); font-size:0.8rem; opacity:0.85; margin:-4px 0 14px;}
+  .link-btn{background:none; border:none; padding:0; font:inherit; color:var(--rust-deep); cursor:pointer; text-decoration:underline;}
+  .detail-actions{display:flex; gap:14px; flex-wrap:wrap; margin:6px 0 22px;}
+  .detail-info p.summary, .product-detail-info p.summary, .feed-post p.summary{white-space:pre-line; overflow-wrap:anywhere;}
+  .detail-info p.summary a, .product-detail-info p.summary a{color:var(--rust-deep);}
   .detail-info h1{font-size:clamp(1.8rem,3vw,2.4rem); margin:10px 0 14px;}
   .detail-info p.summary{font-size:1.02rem; opacity:0.88; max-width:600px; margin-bottom:18px;}
   .chapter-list{border-top:1px solid var(--paper-line); margin-top:10px;}
@@ -237,18 +250,25 @@
   /* ===== Trang chi tiết sản phẩm — gallery ảnh ===== */
   .product-detail-grid{display:grid; grid-template-columns:1fr 1fr; gap:52px; align-items:start; padding:56px 0 20px;}
   .gallery-main{
-    aspect-ratio:1/1; background:linear-gradient(160deg, var(--indigo) 0%, var(--indigo-deep) 100%);
+    background:linear-gradient(160deg, var(--indigo) 0%, var(--indigo-deep) 100%);
     display:flex; align-items:center; justify-content:center; color:var(--cream);
-    font-family:var(--display); font-size:1.4rem; text-align:center; padding:24px; position:relative;
-    margin-bottom:14px;
+    font-family:var(--display); font-size:1.4rem; text-align:center; padding:22px; position:relative;
+    margin-bottom:14px; min-height:220px;
   }
-  .gallery-main::before{content:""; position:absolute; inset:14px; border:1px solid rgba(242,230,206,0.3);}
-  .gallery-thumbs{display:flex; gap:10px;}
+  .gallery-main::before{content:""; position:absolute; inset:10px; border:1px solid rgba(242,230,206,0.3); pointer-events:none;}
+  /* Ảnh sản phẩm: giữ đúng tỉ lệ gốc, không crop; ảnh quá cao thì thu lại vừa màn hình */
+  .gallery-main img, .gallery-main canvas{
+    position:relative; display:block; width:100% !important; height:auto !important;
+    max-height:min(78vh, 760px); object-fit:contain !important;
+  }
+  .gallery-thumbs{display:flex; gap:10px; flex-wrap:wrap;}
   .gallery-thumb{
-    flex:1; aspect-ratio:1/1; background:var(--cream-deep); border:1px solid var(--paper-line);
-    display:flex; align-items:center; justify-content:center; font-family:var(--mono); font-size:0.68rem;
-    color:var(--indigo); opacity:0.75; cursor:default;
+    flex:0 0 calc(25% - 8px); aspect-ratio:1/1; background:var(--cream-deep); border:1.5px solid var(--paper-line);
+    padding:4px; cursor:pointer; position:relative; overflow:hidden; display:flex; align-items:center; justify-content:center;
   }
+  .gallery-thumb:hover{border-color:var(--rust);}
+  .gallery-thumb.active{border-color:var(--rust); box-shadow:0 0 0 1px var(--rust);}
+  .gallery-thumb img, .gallery-thumb canvas{width:100%; height:100%; object-fit:contain;}
   .product-price-row{display:flex; align-items:center; gap:14px; margin:18px 0 6px;}
   .product-price-row .price-tag{font-size:1.15rem;}
   .product-detail-info p.summary{font-size:1.02rem; opacity:0.88; margin:14px 0 20px;}
@@ -271,6 +291,26 @@
   .freeship-row{display:flex; justify-content:space-between; gap:14px; padding:11px 0; border-bottom:1px solid var(--paper-line); font-size:0.9rem;}
   .freeship-row small{opacity:0.6; font-size:0.78rem;}
   .freeship-row span:last-child{font-family:var(--mono); font-size:0.82rem; color:var(--rust-deep); white-space:nowrap;}
+
+  /* ===== LỌC THEO TÁC GIẢ (Doujinshi) ===== */
+  .author-filter{display:flex; flex-wrap:wrap; gap:8px; margin-bottom:30px;}
+  .chip{
+    font-family:var(--mono); font-size:0.76rem; padding:7px 14px; border:1px solid var(--paper-line);
+    border-radius:20px; background:transparent; cursor:pointer; color:var(--ink); transition:all .15s ease;
+  }
+  .chip:hover{border-color:var(--rust); color:var(--rust-deep);}
+  .chip.active{background:var(--indigo-deep); color:var(--cream); border-color:var(--indigo-deep);}
+  .chip small{opacity:0.65; margin-left:4px; font-size:0.9em;}
+  .empty-note{font-family:var(--mono); font-size:0.82rem; opacity:0.7; padding:30px 0;}
+  .postcard p{white-space:pre-line; overflow-wrap:anywhere; display:-webkit-box; -webkit-line-clamp:4; -webkit-box-orient:vertical; overflow:hidden;}
+
+  /* ===== TRÌNH ĐỌC (ảnh / PDF nhiều trang) ===== */
+  .reader-body{max-width:900px; margin:0 auto; padding:28px 28px 20px;}
+  .reader-actions{display:flex; gap:14px; flex-wrap:wrap; margin:0 0 22px;}
+  .reader-page{display:block; width:100%; height:auto; margin:0 auto 14px; background:#fff; border:1px solid var(--paper-line);}
+  .reader-status{padding:40px 0; text-align:center; font-family:var(--mono); font-size:0.8rem; opacity:0.75;}
+  .reader-status a{color:var(--rust-deep);}
+
 
   /* ===== FOOTER ===== */
   footer{background:var(--indigo-deep); color:var(--cream); padding:64px 0 32px;}
@@ -297,8 +337,9 @@
     .catalog-item{grid-template-columns:1fr; gap:6px;}
     .catalog-item .status{text-align:left;}
     .detail-grid{grid-template-columns:1fr; padding-top:36px;}
-    .detail-cover{max-width:220px;}
+    .detail-cover{max-width:280px;}
     .product-detail-grid{grid-template-columns:1fr; padding-top:36px;}
+    .gallery-thumb{flex-basis:calc(25% - 8px);}
     .order-guide-grid{grid-template-columns:1fr;}
   }
 </style>
@@ -434,10 +475,6 @@
             <div class="feed-tags"><span class="feed-tag">#Hetalia</span><span class="feed-tag">#AlfredFJones</span></div>
           </article>
 
-
-
-
-
         </div>
       </div>
     </section>
@@ -454,6 +491,7 @@
       </div>
       <section>
         <div class="wrap">
+          <div class="author-filter" id="doujinshi-filter" style="display:none;"></div>
           <div class="card-grid" id="doujinshi-grid"></div>
           <div class="shop-note">
             <strong>✎</strong>
@@ -507,7 +545,6 @@
           </div>
         </div>
       </section>
-      </section>
     </div>
     <div id="ton-kho-detail-wrap" style="display:none;"></div>
   </div>
@@ -550,8 +587,10 @@
      hiện ra ở trang đọc). Muốn thêm chương mới: copy 1 khối {..} có sẵn,
      đổi slug/name/content là xong — web tự tạo trang đọc mới.
      - Với fic dịch: content là các đoạn <p>...</p>.
-     - Với doujinshi: content có thể là các thẻ <img src="ten-anh.jpg">
-       (nhớ để file ảnh cùng thư mục với file HTML này).
+     - Với doujinshi: chỉ cần điền "images": ["images/a.pdf"] hoặc nhiều ảnh
+       ["images/1.jpg","images/2.jpg",...] — web tự hiện nút ĐỌC NGAY, PDF tự
+       tách từng trang. Thêm "author": "Tên tác giả" để lọc theo tác giả.
+     - Hàng tồn kho: "images" 1 ảnh cũng được, nhiều ảnh thì tự có ô ảnh nhỏ.
   ============================================================= */
 
             var doujinshiData = {
@@ -603,23 +642,147 @@
     }
   };
 
+  /* ============ TIỆN ÍCH ============ */
+  var NO_AUTHOR = 'Chưa rõ tác giả';
+
+  function esc(s){ return String(s == null ? '' : s).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;'); }
+  function escAttr(s){ return esc(s).replace(/"/g,'&quot;'); }
+  // Giữ xuống dòng (CSS pre-line) + tự biến link http(s) thành link bấm được
+  function fmtText(s, links){
+    var t = esc(s);
+    if(links){ t = t.replace(/(https?:\/\/[^\s<]+)/g, function(u){ return '<a href="'+u+'" target="_blank" rel="noopener">'+u+'</a>'; }); }
+    return t;
+  }
+  function isPdf(u){ return /\.pdf(\?.*)?$/i.test(u || ''); }
+  function safeUrl(u){ try{ return encodeURI(decodeURI(u)); }catch(e){ return u; } }
+  function srcFromCover(html){ var m = /src=["']([^"']+)["']/i.exec(html || ''); return m ? m[1] : ''; }
+
+  // Trả về <img> (ảnh) hoặc <canvas> (trang đầu của PDF)
+  function mediaHTML(src, alt, eager){
+    if(!src) return '';
+    var u = escAttr(safeUrl(src));
+    if(isPdf(src)){
+      return '<canvas class="pdf-canvas" data-pdf="'+u+'" data-page="1" role="img" aria-label="'+escAttr(alt||'')+'"></canvas>';
+    }
+    return '<img src="'+u+'" alt="'+escAttr(alt||'')+'"'+(eager ? '' : ' loading="lazy"')+'>';
+  }
+  // Bìa: ưu tiên ảnh bìa admin chọn, không có thì lấy ảnh đầu tiên
+  function coverMedia(item, alt){
+    var src = srcFromCover(item.cover) || (item.images && item.images[0]) || '';
+    return src ? mediaHTML(src, alt) : (item.cover || '');
+  }
+
+  /* ---- PDF (dùng pdf.js, tải khi cần) ---- */
+  var PDFJS_VER = '3.11.174';
+  var pdfLibPromise = null, pdfDocs = {};
+  function loadPdfLib(){
+    if(window.pdfjsLib) return Promise.resolve(window.pdfjsLib);
+    if(pdfLibPromise) return pdfLibPromise;
+    pdfLibPromise = new Promise(function(resolve, reject){
+      var sc = document.createElement('script');
+      sc.src = 'https://cdnjs.cloudflare.com/ajax/libs/pdf.js/'+PDFJS_VER+'/pdf.min.js';
+      sc.onload = function(){
+        window.pdfjsLib.GlobalWorkerOptions.workerSrc = 'https://cdnjs.cloudflare.com/ajax/libs/pdf.js/'+PDFJS_VER+'/pdf.worker.min.js';
+        resolve(window.pdfjsLib);
+      };
+      sc.onerror = function(){ pdfLibPromise = null; reject(new Error('Không tải được pdf.js')); };
+      document.head.appendChild(sc);
+    });
+    return pdfLibPromise;
+  }
+  // light = true: chỉ để lấy trang bìa, không tải cả file nền
+  function getPdf(url, light){
+    var key = (light ? 'L:' : 'F:') + url;
+    if(!pdfDocs[key]){
+      pdfDocs[key] = loadPdfLib().then(function(lib){
+        return lib.getDocument({ url: url, disableAutoFetch: !!light }).promise;
+      }).catch(function(err){ delete pdfDocs[key]; throw err; });
+    }
+    return pdfDocs[key];
+  }
+  function renderPdfCanvas(canvas, width, light){
+    var url = canvas.getAttribute('data-pdf');
+    var n = parseInt(canvas.getAttribute('data-page'), 10) || 1;
+    return getPdf(url, light).then(function(pdf){ return pdf.getPage(n); }).then(function(page){
+      var v1 = page.getViewport({ scale: 1 });
+      var dpr = Math.min(window.devicePixelRatio || 1, 2);
+      var v = page.getViewport({ scale: ((width || 600) * dpr) / v1.width });
+      canvas.width = Math.floor(v.width);
+      canvas.height = Math.floor(v.height);
+      return page.render({ canvasContext: canvas.getContext('2d'), viewport: v }).promise;
+    }).catch(function(){ canvas.classList.add('pdf-error'); });
+  }
+  function hydratePdfCanvases(root){
+    (root || document).querySelectorAll('canvas.pdf-canvas[data-pdf]:not([data-done])').forEach(function(c){
+      c.setAttribute('data-done', '1');
+      renderPdfCanvas(c, 600, true);
+    });
+  }
+
+  /* ---- Tác giả ---- */
+  function getAuthor(d){
+    var a = (d.author || '').toString().trim();
+    if(!a){
+      var m = /(?:artist|author|tác giả)\s*:\s*([^\n]+)/i.exec(d.summary || '');
+      if(m) a = m[1].trim();
+    }
+    return a || NO_AUTHOR;
+  }
+
+
   /* ============ RENDER DANH SÁCH ============ */
+  var doujinFilter = '';   // '' = tất cả, còn lại là tên tác giả viết thường
+
   function renderDoujinshiGrid(){
     var wrap = document.getElementById('doujinshi-grid');
+    var bar = document.getElementById('doujinshi-filter');
+    var slugs = Object.keys(doujinshiData);
+    var noKey = NO_AUTHOR.toLowerCase();
+
+    // gom nhóm theo tác giả
+    var groups = {}, order = [];
+    slugs.forEach(function(slug){
+      var a = getAuthor(doujinshiData[slug]), k = a.toLowerCase();
+      if(!groups[k]){ groups[k] = { label: a, count: 0 }; order.push(k); }
+      groups[k].count++;
+    });
+    order.sort(function(a, b){
+      if(a === noKey) return 1;
+      if(b === noKey) return -1;
+      return groups[a].label.localeCompare(groups[b].label, 'vi');
+    });
+    if(doujinFilter && !groups[doujinFilter]) doujinFilter = '';
+
+    // thanh lọc (chỉ hiện khi có từ 2 nhóm tác giả trở lên)
+    if(order.length > 1){
+      var chips = '<button type="button" class="chip'+(doujinFilter === '' ? ' active' : '')+'" data-author-filter="">Tất cả <small>('+slugs.length+')</small></button>';
+      order.forEach(function(k){
+        chips += '<button type="button" class="chip'+(doujinFilter === k ? ' active' : '')+'" data-author-filter="'+escAttr(k)+'">'+esc(groups[k].label)+' <small>('+groups[k].count+')</small></button>';
+      });
+      bar.innerHTML = chips; bar.style.display = 'flex';
+    } else { bar.innerHTML = ''; bar.style.display = 'none'; }
+
     var html = '';
-    Object.keys(doujinshiData).forEach(function(slug){
+    slugs.forEach(function(slug){
       var d = doujinshiData[slug];
+      var author = getAuthor(d);
+      if(doujinFilter && author.toLowerCase() !== doujinFilter) return;
       var statusClass = d.status === 'done' ? 'status-done' : 'status-going';
       html += '<a class="postcard" href="#doujinshi/'+slug+'">' +
-        '<div class="cover">'+d.cover+'</div>' +
-        '<div class="tag-row"><span class="tag">Fandom: '+d.fandom+'</span><span class="tag '+statusClass+'">'+d.statusLabel+'</span></div>' +
-        '<h3>'+d.title+'</h3>' +
-        '<p>'+d.summary+'</p>' +
+        '<div class="cover">'+coverMedia(d, d.title)+'</div>' +
+        '<div class="tag-row">' +
+          (author !== NO_AUTHOR ? '<span class="tag">Tác giả: '+esc(author)+'</span>' : '') +
+          '<span class="tag">Fandom: '+esc(d.fandom)+'</span><span class="tag '+statusClass+'">'+esc(d.statusLabel)+'</span>' +
+        '</div>' +
+        '<h3>'+esc(d.title)+'</h3>' +
+        (d.summary ? '<p>'+fmtText(d.summary, false)+'</p>' : '') +
         '<span class="read-more">XEM TRUYỆN →</span>' +
       '</a>';
     });
-    wrap.innerHTML = html;
+    wrap.innerHTML = html || '<div class="empty-note">Chưa có tác phẩm nào.</div>';
+    hydratePdfCanvases(wrap);
   }
+
 
   function renderFicCatalog(){
     var wrap = document.getElementById('fic-catalog');
@@ -644,20 +807,22 @@
     Object.keys(productData).forEach(function(slug){
       var p = productData[slug];
       html += '<a class="postcard" href="#ton-kho/'+slug+'">' +
-        '<div class="cover product-cover">'+p.cover+'</div>' +
-        '<h3>'+p.name+'</h3>' +
-        '<p>'+p.summary+'</p>' +
-        '<span class="price-tag">'+p.price+'</span>' +
+        '<div class="cover product-cover">'+coverMedia(p, p.name)+'</div>' +
+        '<h3>'+esc(p.name)+'</h3>' +
+        (p.summary ? '<p>'+fmtText(p.summary, false)+'</p>' : '') +
+        '<span class="price-tag">'+esc(p.price)+'</span>' +
       '</a>';
     });
     wrap.innerHTML = html;
+    hydratePdfCanvases(wrap);
   }
+
 
   /* ============ TRANG CHI TIẾT BỘ TRUYỆN ============ */
   function chapterListHTML(root, workSlug, chapters){
     var html = '<div class="chapter-list">';
     chapters.forEach(function(c){
-      html += '<a class="chapter-item" href="#'+root+'/'+workSlug+'/'+c.slug+'"><span class="cname">'+c.name+'</span><span class="cnote">'+c.note+'</span></a>';
+      html += '<a class="chapter-item" href="#'+root+'/'+workSlug+'/'+c.slug+'"><span class="cname">'+c.name+'</span><span class="cnote">'+(c.note||'')+'</span></a>';
     });
     html += '</div>';
     return html;
@@ -671,26 +836,111 @@
       return;
     }
     var statusClass = d.status === 'done' ? 'status-done' : 'status-going';
+    var author = getAuthor(d);
+    var hasFiles = (d.images || []).length > 0;
+    var chapters = d.chapters || [];
     wrap.innerHTML =
       '<div class="wrap">' +
         '<button class="back-link" style="margin-top:28px;" data-nav="doujinshi">← Về danh sách Doujinshi</button>' +
         '<div class="detail-grid">' +
-          '<div class="detail-cover">'+d.cover+'</div>' +
+          '<div class="detail-cover">'+coverMedia(d, d.title)+'</div>' +
           '<div class="detail-info">' +
-            '<div class="tag-row"><span class="tag">Fandom: '+d.fandom+'</span><span class="tag '+statusClass+'">'+d.statusLabel+'</span></div>' +
-            '<h1>'+d.title+'</h1>' +
-            '<p class="summary">'+d.summary+'</p>' +
-            chapterListHTML('doujinshi', slug, d.chapters) +
+            '<div class="tag-row"><span class="tag">Fandom: '+esc(d.fandom)+'</span><span class="tag '+statusClass+'">'+esc(d.statusLabel)+'</span></div>' +
+            '<h1>'+esc(d.title)+'</h1>' +
+            (author !== NO_AUTHOR ? '<div class="author-line">Tác giả: <button type="button" class="link-btn" data-author-link="'+escAttr(author.toLowerCase())+'">'+esc(author)+'</button></div>' : '') +
+            (d.summary ? '<p class="summary">'+fmtText(d.summary, true)+'</p>' : '') +
+            (hasFiles ? '<div class="detail-actions"><a class="btn btn-solid" href="#doujinshi/'+slug+'/read">📖 ĐỌC NGAY</a></div>' : '') +
+            (chapters.length ? chapterListHTML('doujinshi', slug, chapters) : '') +
           '</div>' +
         '</div>' +
       '</div>';
+    hydratePdfCanvases(wrap);
   }
+
+
+  /* ============ TRÌNH ĐỌC DOUJINSHI (ảnh + PDF) ============ */
+  function buildPdfPages(box, src){
+    var url = safeUrl(src);
+    box.innerHTML = '<div class="reader-status">Đang tải PDF…</div>';
+    getPdf(url, false).then(function(pdf){
+      return pdf.getPage(1).then(function(p1){
+        var vp = p1.getViewport({ scale: 1 });
+        box.innerHTML = '';
+        var width = Math.min(box.clientWidth || 900, 1000);
+        var io = ('IntersectionObserver' in window) ? new IntersectionObserver(function(entries){
+          entries.forEach(function(en){
+            if(en.isIntersecting){ io.unobserve(en.target); renderPdfCanvas(en.target, width, false); }
+          });
+        }, { rootMargin: '1500px 0px' }) : null;
+        for(var i = 1; i <= pdf.numPages; i++){
+          var c = document.createElement('canvas');
+          c.className = 'reader-page';
+          c.setAttribute('data-pdf', url);
+          c.setAttribute('data-page', i);
+          c.setAttribute('aria-label', 'Trang ' + i);
+          c.width = Math.round(vp.width); c.height = Math.round(vp.height);   // giữ chỗ đúng tỉ lệ
+          box.appendChild(c);
+          if(io) io.observe(c); else renderPdfCanvas(c, width, false);
+        }
+      });
+    }).catch(function(){
+      box.innerHTML = '<div class="reader-status">Không hiển thị được PDF ngay trong trang. <a href="'+escAttr(url)+'" target="_blank" rel="noopener">Mở file PDF ↗</a></div>';
+    });
+  }
+
+  function renderDoujinshiReader(slug){
+    var d = doujinshiData[slug];
+    var wrap = document.getElementById('doujinshi-reading-wrap');
+    var files = d ? (d.images || []) : [];
+    if(!d || !files.length){
+      wrap.innerHTML = '<div class="wrap not-found"><h2>Chưa có nội dung để đọc</h2><p style="opacity:.8; margin-bottom:22px;">Bộ này chưa được đăng ảnh hoặc file PDF.</p><button class="btn" data-nav="doujinshi">← Về danh sách Doujinshi</button></div>';
+      return;
+    }
+    var author = getAuthor(d);
+    wrap.innerHTML =
+      '<div class="wrap-narrow reading-head">' +
+        '<button class="back-link" data-nav="doujinshi/'+slug+'">← Về '+esc(d.title)+'</button>' +
+        '<div class="reading-eyebrow" style="margin-top:18px;">'+(author !== NO_AUTHOR ? esc(author) : 'Doujinshi')+'</div>' +
+        '<h1>'+esc(d.title)+'</h1>' +
+      '</div>' +
+      '<div class="reader-body" id="reader-body"></div>' +
+      '<div class="wrap-narrow"><div class="reading-nav">' +
+        '<a href="#doujinshi/'+slug+'">← Về trang tác phẩm</a>' +
+        '<a href="#doujinshi">Danh sách Doujinshi →</a>' +
+      '</div></div>';
+
+    var body = document.getElementById('reader-body');
+    var pdfFiles = files.filter(isPdf);
+    if(pdfFiles.length){
+      var actions = document.createElement('div');
+      actions.className = 'reader-actions';
+      actions.innerHTML = pdfFiles.map(function(f){
+        return '<a class="btn" href="'+escAttr(safeUrl(f))+'" target="_blank" rel="noopener">⤓ Mở / tải file PDF</a>';
+      }).join('');
+      body.appendChild(actions);
+    }
+    files.forEach(function(src, i){
+      if(isPdf(src)){
+        var box = document.createElement('div');
+        body.appendChild(box);
+        buildPdfPages(box, src);
+      } else {
+        var img = document.createElement('img');
+        img.className = 'reader-page';
+        img.loading = 'lazy';
+        img.alt = 'Trang ' + (i + 1);
+        img.src = safeUrl(src);
+        body.appendChild(img);
+      }
+    });
+  }
+
 
   function renderFicDetail(slug){
     var f = ficData[slug];
     var wrap = document.getElementById('fic-detail-wrap');
     if(!f){
-      wrap.innerHTML = '<div class="wrap not-found"><h2>Không tìm thấy fic này</h2><p style="opacity:.8; margin-bottom:22px;">Có thể đường dẫn bị sai hoặc fic chưa được thêm vào.</p><button class="btn" data-nav="fic-dich">← Về danh sách Fic dịch</button></div>';
+      wrap.innerHTML = '<div class="wrap not-found"><h2>Không tìm thấy fic này</h2><p style="opacity:.8; margin-bottom:22px;">Có thể đường dẫn bị sai hoặc fic chưa được thêm vào.</p><button class="btn" data-nav="fiction">← Về danh sách Fic dịch</button></div>';
       return;
     }
     var statusClass = f.status === 'done' ? 'status-done' : 'status-going';
@@ -700,7 +950,7 @@
         '<div class="wrap-narrow" style="padding:0; margin-top:26px;">' +
           '<div class="tag-row"><span class="tag">Tác giả gốc: '+f.author+'</span><span class="tag '+statusClass+'">'+f.statusLabel+'</span></div>' +
           '<h1 style="font-size:clamp(1.8rem,3vw,2.4rem); margin:14px 0;">'+f.title+'</h1>' +
-          '<p style="opacity:.88; font-size:1.02rem; margin-bottom:10px;">'+f.summary+'</p>' +
+          '<p class="summary" style="opacity:.88; font-size:1.02rem; margin-bottom:10px;">'+fmtText(f.summary, true)+'</p>' +
           chapterListHTML('fiction', slug, f.chapters) +
         '</div>' +
       '</div>';
@@ -745,35 +995,44 @@
       wrap.innerHTML = '<div class="wrap not-found"><h2>Không tìm thấy sản phẩm này</h2><p style="opacity:.8; margin-bottom:22px;">Có thể đường dẫn bị sai hoặc sản phẩm chưa được thêm vào.</p><button class="btn" data-nav="ton-kho">← Về Hàng tồn kho</button></div>';
       return;
     }
-    var specsHTML = '<div class="spec-list">';
-    p.specs.forEach(function(s){
-      specsHTML += '<div class="spec-item"><span class="label">'+s.label+'</span><span>'+s.value+'</span></div>';
-    });
-    specsHTML += '</div>';
+    var imgs = (p.images && p.images.length) ? p.images : [srcFromCover(p.cover)].filter(Boolean);
+    var mainHTML = imgs.length ? mediaHTML(imgs[0], p.name, true) : (p.cover || '');
+    // Chỉ hiện ô ảnh nhỏ khi có từ 2 ảnh trở lên — đúng số ảnh đã đăng
+    var thumbsHTML = '';
+    if(imgs.length > 1){
+      thumbsHTML = '<div class="gallery-thumbs">' + imgs.map(function(src, i){
+        return '<button type="button" class="gallery-thumb'+(i === 0 ? ' active' : '')+'" data-src="'+escAttr(src)+'" aria-label="Ảnh '+(i+1)+'">'+mediaHTML(src, 'Ảnh '+(i+1))+'</button>';
+      }).join('') + '</div>';
+    }
+    var specsHTML = '';
+    if(p.specs && p.specs.length){
+      specsHTML = '<div class="spec-list">';
+      p.specs.forEach(function(sp){
+        specsHTML += '<div class="spec-item"><span class="label">'+esc(sp.label)+'</span><span>'+esc(sp.value)+'</span></div>';
+      });
+      specsHTML += '</div>';
+    }
 
     wrap.innerHTML =
       '<div class="wrap">' +
         '<button class="back-link" style="margin-top:28px;" data-nav="ton-kho">← Về Hàng tồn kho</button>' +
         '<div class="product-detail-grid">' +
           '<div>' +
-            '<div class="gallery-main">'+p.cover+'</div>' +
-            '<div class="gallery-thumbs">' +
-              '<div class="gallery-thumb">Ảnh 1</div>' +
-              '<div class="gallery-thumb">Ảnh 2</div>' +
-              '<div class="gallery-thumb">Ảnh 3</div>' +
-              '<div class="gallery-thumb">Ảnh 4</div>' +
-            '</div>' +
+            '<div class="gallery-main" id="gallery-main">'+mainHTML+'</div>' +
+            thumbsHTML +
           '</div>' +
           '<div class="product-detail-info">' +
-            '<h1>'+p.name+'</h1>' +
-            '<div class="product-price-row"><span class="price-tag">'+p.price+'</span></div>' +
-            '<p class="summary">'+p.summary+'</p>' +
+            '<h1>'+esc(p.name)+'</h1>' +
+            '<div class="product-price-row"><span class="price-tag">'+esc(p.price)+'</span></div>' +
+            (p.summary ? '<p class="summary">'+fmtText(p.summary, true)+'</p>' : '') +
             specsHTML +
             '<div class="order-note">💌 Nhắn trực tiếp cho trạm qua Facebook ở cuối trang để đặt sản phẩm này nhé.</div>' +
           '</div>' +
         '</div>' +
       '</div>';
+    hydratePdfCanvases(wrap);
   }
+
 
   /* ============ ROUTER ============ */
   var rootPages = ['gioi-thieu','rant','doujinshi','fiction','ton-kho'];
@@ -804,9 +1063,10 @@
       var dDetail = document.getElementById('doujinshi-detail-wrap');
       var dReading = document.getElementById('doujinshi-reading-wrap');
       dList.style.display = 'none'; dDetail.style.display = 'none'; dReading.style.display = 'none';
-      if(chapterSlug){ dReading.style.display = 'block'; renderReadingPage('doujinshi','doujinshi-reading-wrap', doujinshiData, slug, chapterSlug, 'doujinshi'); }
+      if(slug && chapterSlug === 'read'){ dReading.style.display = 'block'; renderDoujinshiReader(slug); }
+      else if(chapterSlug){ dReading.style.display = 'block'; renderReadingPage('doujinshi','doujinshi-reading-wrap', doujinshiData, slug, chapterSlug, 'doujinshi'); }
       else if(slug){ dDetail.style.display = 'block'; renderDoujinshiDetail(slug); }
-      else { dList.style.display = 'block'; }
+      else { dList.style.display = 'block'; renderDoujinshiGrid(); }
     }
 
     if(root === 'fiction'){
@@ -833,7 +1093,25 @@
     var navBtn = e.target.closest('[data-nav]');
     if(navBtn){ e.preventDefault(); navigate(navBtn.getAttribute('data-nav')); return; }
 
-    var routeLink = e.target.closest('a[href^="#doujinshi/"], a[href^="#fic-dich/"], a[href^="#ton-kho/"]');
+    // Chip lọc tác giả
+    var chip = e.target.closest('[data-author-filter]');
+    if(chip){ doujinFilter = chip.getAttribute('data-author-filter'); renderDoujinshiGrid(); return; }
+
+    // Bấm tên tác giả ở trang tác phẩm -> về danh sách đã lọc sẵn
+    var authorLink = e.target.closest('[data-author-link]');
+    if(authorLink){ doujinFilter = authorLink.getAttribute('data-author-link'); navigate('doujinshi'); return; }
+
+    // Đổi ảnh chính ở gallery sản phẩm
+    var thumb = e.target.closest('.gallery-thumb[data-src]');
+    if(thumb){
+      var main = document.getElementById('gallery-main');
+      main.innerHTML = mediaHTML(thumb.getAttribute('data-src'), thumb.getAttribute('aria-label'), true);
+      hydratePdfCanvases(main);
+      thumb.parentNode.querySelectorAll('.gallery-thumb').forEach(function(t){ t.classList.toggle('active', t === thumb); });
+      return;
+    }
+
+    var routeLink = e.target.closest('a[href^="#doujinshi/"], a[href^="#fiction/"], a[href^="#ton-kho/"]');
     if(routeLink){ e.preventDefault(); navigate(routeLink.getAttribute('href')); return; }
 
     // Link placeholder chưa gắn nội dung thật — không cho nhảy lung tung

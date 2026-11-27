@@ -475,6 +475,7 @@
             <div class="feed-tags"><span class="feed-tag">#Hetalia</span><span class="feed-tag">#AlfredFJones</span></div>
           </article>
 
+
         </div>
       </div>
     </section>
@@ -593,34 +594,7 @@
      - Hàng tồn kho: "images" 1 ảnh cũng được, nhiều ảnh thì tự có ô ảnh nhỏ.
   ============================================================= */
 
-            var doujinshiData = {
-    "hauted": {
-      "title": "HAUTED",
-      "fandom": "đang cập nhật",
-      "status": "going",
-      "statusLabel": "Đang tiến hành",
-      "cover": "<img src=\"images/1795442267053-0-HAUNTED-.pdf\" style=\"width:100%;height:100%;object-fit:cover;\">",
-      "images": [
-        "images/1795442267053-0-HAUNTED-.pdf"
-      ],
-      "summary": "",
-      "chapters": []
-    },
-    "nhat-ky-cua-nguoi-o-lai-ga": {
-      "title": "Nhật Ký Của Người Ở Lại Ga",
-      "fandom": "đang cập nhật",
-      "status": "going",
-      "statusLabel": "Đang tiến hành",
-      "cover": "<img src=\"images/1795442297173-0-d74a0ae2-5a0d-4d66-b30f-5855d3155ba4.jpg\" style=\"width:100%;height:100%;object-fit:cover;\">",
-      "images": [
-        "images/1795442297173-0-d74a0ae2-5a0d-4d66-b30f-5855d3155ba4.jpg",
-        "images/1795442312638-0-d4fea098-8c82-40d6-a140-4eda81b46b40.jpg",
-        "images/1795442322883-0-b90d95a4-5026-4162-a05a-5c9b2c8edb10.jpg"
-      ],
-      "summary": "",
-      "chapters": []
-    }
-  };
+              var doujinshiData = {};
 
   var ficData = {};
 
@@ -641,94 +615,6 @@
       ]
     }
   };
-
-  /* ============ TIỆN ÍCH ============ */
-  var NO_AUTHOR = 'Chưa rõ tác giả';
-
-  function esc(s){ return String(s == null ? '' : s).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;'); }
-  function escAttr(s){ return esc(s).replace(/"/g,'&quot;'); }
-  // Giữ xuống dòng (CSS pre-line) + tự biến link http(s) thành link bấm được
-  function fmtText(s, links){
-    var t = esc(s);
-    if(links){ t = t.replace(/(https?:\/\/[^\s<]+)/g, function(u){ return '<a href="'+u+'" target="_blank" rel="noopener">'+u+'</a>'; }); }
-    return t;
-  }
-  function isPdf(u){ return /\.pdf(\?.*)?$/i.test(u || ''); }
-  function safeUrl(u){ try{ return encodeURI(decodeURI(u)); }catch(e){ return u; } }
-  function srcFromCover(html){ var m = /src=["']([^"']+)["']/i.exec(html || ''); return m ? m[1] : ''; }
-
-  // Trả về <img> (ảnh) hoặc <canvas> (trang đầu của PDF)
-  function mediaHTML(src, alt, eager){
-    if(!src) return '';
-    var u = escAttr(safeUrl(src));
-    if(isPdf(src)){
-      return '<canvas class="pdf-canvas" data-pdf="'+u+'" data-page="1" role="img" aria-label="'+escAttr(alt||'')+'"></canvas>';
-    }
-    return '<img src="'+u+'" alt="'+escAttr(alt||'')+'"'+(eager ? '' : ' loading="lazy"')+'>';
-  }
-  // Bìa: ưu tiên ảnh bìa admin chọn, không có thì lấy ảnh đầu tiên
-  function coverMedia(item, alt){
-    var src = srcFromCover(item.cover) || (item.images && item.images[0]) || '';
-    return src ? mediaHTML(src, alt) : (item.cover || '');
-  }
-
-  /* ---- PDF (dùng pdf.js, tải khi cần) ---- */
-  var PDFJS_VER = '3.11.174';
-  var pdfLibPromise = null, pdfDocs = {};
-  function loadPdfLib(){
-    if(window.pdfjsLib) return Promise.resolve(window.pdfjsLib);
-    if(pdfLibPromise) return pdfLibPromise;
-    pdfLibPromise = new Promise(function(resolve, reject){
-      var sc = document.createElement('script');
-      sc.src = 'https://cdnjs.cloudflare.com/ajax/libs/pdf.js/'+PDFJS_VER+'/pdf.min.js';
-      sc.onload = function(){
-        window.pdfjsLib.GlobalWorkerOptions.workerSrc = 'https://cdnjs.cloudflare.com/ajax/libs/pdf.js/'+PDFJS_VER+'/pdf.worker.min.js';
-        resolve(window.pdfjsLib);
-      };
-      sc.onerror = function(){ pdfLibPromise = null; reject(new Error('Không tải được pdf.js')); };
-      document.head.appendChild(sc);
-    });
-    return pdfLibPromise;
-  }
-  // light = true: chỉ để lấy trang bìa, không tải cả file nền
-  function getPdf(url, light){
-    var key = (light ? 'L:' : 'F:') + url;
-    if(!pdfDocs[key]){
-      pdfDocs[key] = loadPdfLib().then(function(lib){
-        return lib.getDocument({ url: url, disableAutoFetch: !!light }).promise;
-      }).catch(function(err){ delete pdfDocs[key]; throw err; });
-    }
-    return pdfDocs[key];
-  }
-  function renderPdfCanvas(canvas, width, light){
-    var url = canvas.getAttribute('data-pdf');
-    var n = parseInt(canvas.getAttribute('data-page'), 10) || 1;
-    return getPdf(url, light).then(function(pdf){ return pdf.getPage(n); }).then(function(page){
-      var v1 = page.getViewport({ scale: 1 });
-      var dpr = Math.min(window.devicePixelRatio || 1, 2);
-      var v = page.getViewport({ scale: ((width || 600) * dpr) / v1.width });
-      canvas.width = Math.floor(v.width);
-      canvas.height = Math.floor(v.height);
-      return page.render({ canvasContext: canvas.getContext('2d'), viewport: v }).promise;
-    }).catch(function(){ canvas.classList.add('pdf-error'); });
-  }
-  function hydratePdfCanvases(root){
-    (root || document).querySelectorAll('canvas.pdf-canvas[data-pdf]:not([data-done])').forEach(function(c){
-      c.setAttribute('data-done', '1');
-      renderPdfCanvas(c, 600, true);
-    });
-  }
-
-  /* ---- Tác giả ---- */
-  function getAuthor(d){
-    var a = (d.author || '').toString().trim();
-    if(!a){
-      var m = /(?:artist|author|tác giả)\s*:\s*([^\n]+)/i.exec(d.summary || '');
-      if(m) a = m[1].trim();
-    }
-    return a || NO_AUTHOR;
-  }
-
 
   /* ============ RENDER DANH SÁCH ============ */
   var doujinFilter = '';   // '' = tất cả, còn lại là tên tác giả viết thường
